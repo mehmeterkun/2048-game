@@ -16,12 +16,25 @@ int main() {
     const float KUTU_BOYUTU = 120.0f;
     const float BOSLUK = 20.0f;
 
+    // Arka plandaki sayı mekanizmasını takip eden matris yapısı!
+    // 0 olan hücreler boş görünecek, diğer sayılar dolu kutuları temsil edecek!
+    int harita[4][4] = {
+        {2, 0, 4, 0},
+        {0, 8, 0, 0},
+        {16, 0, 0, 2},
+        {0, 0, 4, 0}
+    };
+
     sf::RectangleShape arkaPlanIzgara(sf::Vector2f(IZGARA_BOYUTU, IZGARA_BOYUTU));
     arkaPlanIzgara.setFillColor(sf::Color(187, 173, 160)); 
     arkaPlanIzgara.setPosition(IZGARA_X, IZGARA_Y);
 
     sf::RectangleShape bosKutu(sf::Vector2f(KUTU_BOYUTU, KUTU_BOYUTU));
     bosKutu.setFillColor(sf::Color(205, 193, 180)); 
+
+    // Sayı içeren dolu kutular için geçici test rengi!
+    sf::RectangleShape doluKutu(sf::Vector2f(KUTU_BOYUTU, KUTU_BOYUTU));
+    doluKutu.setFillColor(sf::Color(242, 177, 121));
 
     while (pencere.isOpen()) {
         sf::Event olay;
@@ -58,8 +71,16 @@ int main() {
                 float kutuX = IZGARA_X + BOSLUK + sutun * (KUTU_BOYUTU + BOSLUK);
                 float kutuY = IZGARA_Y + BOSLUK + satir * (KUTU_BOYUTU + BOSLUK);
                 
-                bosKutu.setPosition(kutuX, kutuY);
-                pencere.draw(bosKutu);
+                // Matristeki değer sıfır ise eski boş kutuyu çiziyoruz!
+                if (harita[satir][sutun] == 0) {
+                    bosKutu.setPosition(kutuX, kutuY);
+                    pencere.draw(bosKutu);
+                } 
+                // Matris doluysa yeni renkli kutumuzu çiziyoruz!
+                else {
+                    doluKutu.setPosition(kutuX, kutuY);
+                    pencere.draw(doluKutu);
+                }
             }
         }
 
