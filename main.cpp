@@ -36,6 +36,20 @@ int main() {
     sf::RectangleShape doluKutu(sf::Vector2f(KUTU_BOYUTU, KUTU_BOYUTU));
     doluKutu.setFillColor(sf::Color(242, 177, 121));
 
+    // Ekrana yazı yazdırabilmek için font nesnesi oluşturuyoruz
+    sf::Font font;
+    // Klasörün içindeki arial fontunu yüklüyoruz, yüklenemezse program kapanır
+    if (!font.loadFromFile("arial.ttf")) {
+        return -1;
+    }
+
+    // Kutuların içine yazılacak sayıların tasarım ayarları!
+    sf::Text yazi;
+    yazi.setFont(font);
+    yazi.setCharacterSize(40); // Yazı boyutu!
+    yazi.setFillColor(sf::Color(119, 110, 101)); 
+    yazi.setStyle(sf::Text::Bold); // kalın yazı
+
     while (pencere.isOpen()) {
         sf::Event olay;
         while (pencere.pollEvent(olay)) {
@@ -66,12 +80,13 @@ int main() {
 
         pencere.draw(arkaPlanIzgara);
 
+        // İç içe döngüler temizlendi ve tek bir çatı altında birleştirildi!
         for (int satir = 0; satir < 4; satir++) {
             for (int sutun = 0; sutun < 4; sutun++) {
                 float kutuX = IZGARA_X + BOSLUK + sutun * (KUTU_BOYUTU + BOSLUK);
                 float kutuY = IZGARA_Y + BOSLUK + satir * (KUTU_BOYUTU + BOSLUK);
                 
-                // Matristeki değer sıfır ise eski boş kutuyu çiziyoruz!
+                // Matristeki değer sıfır ise eski boş kutu çiziliyor!
                 if (harita[satir][sutun] == 0) {
                     bosKutu.setPosition(kutuX, kutuY);
                     pencere.draw(bosKutu);
@@ -80,6 +95,14 @@ int main() {
                 else {
                     doluKutu.setPosition(kutuX, kutuY);
                     pencere.draw(doluKutu);
+
+                    // Eğer kutu doluysa, matristeki sayıyı yazıya çevirip ekrana basıyoruz!
+                    yazi.setString(std::to_string(harita[satir][sutun]));
+                    
+                    // Yazıyı kutunun sol üst köşesine yerleştiriyoruz (Ortalamayı bir sonraki adımda yapıcaz)!
+                    yazi.setPosition(kutuX + 20.0f, kutuY + 20.0f);
+                    
+                    pencere.draw(yazi);
                 }
             }
         }
