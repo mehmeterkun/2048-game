@@ -2,29 +2,32 @@
 #define TILE_HPP
 
 #include <SFML/Graphics.hpp>
+#include <cmath>
 
 class Tile {
 private:
-    int deger;                     //Kutunun içindeki sayı 
-    sf::RectangleShape kutuSekil;  //Kutunun renkli karesi
-    sf::Text yaziSekil;            //Kutunun içindeki yazı nesnesi
+    int deger;
+    sf::Vector2f currentPos;
+    sf::Vector2f targetPos;
+    float moveSpeed;
+    float kutuBoyutu;
 
-    // Sayı değerine göre kutu ve yazı renklerini güncelleyen iç fonksiyon
+    sf::RectangleShape kutuSekil;
+    sf::Text yaziSekil;
+
     void renkleriGuncelle();
 
 public:
+    // Constructor artık doğuş koordinatlarını peşin peşin alıyor
+    Tile(int ilkDeger, const sf::Font& font, float dogusX, float dogusY, float boyut);
     
-    Tile(int ilkDeger, const sf::Font& font);
-
-   
-    void setDeger(int yeniDeger);
-    int getDeger() const;
-
-    //Kutunun konumunu ve boyutunu ayarlayan fonksiyon
     void setPozisyon(float x, float y, float boyut);
-
-    //Kutuyu ve üzerindeki yazıyı ekrana çizdiren fonksiyon
+    void setTarget(float x, float y);
+    void update(float deltaTime);
     void ciz(sf::RenderWindow& pencere);
+
+    int getDeger() const { return deger; }
+    void setDeger(int yeniDeger);
 };
 
 #endif

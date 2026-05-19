@@ -1,10 +1,9 @@
 #include "Board.hpp"
-#include <cstdlib> // rand() ve srand() 
-#include <ctime>   // time() 
+#include <cstdlib> 
+#include <ctime>   
 #include <vector>
-//Izgara renklerini ayarlar ve matrisin içini tamamen boşaltır 
+
 Board::Board(const sf::Font& font) : oyunFontu(font) {
-    // Rastgelelik motoru
     std::srand(std::time(nullptr));
 
     arkaPlanIzgara.setSize(sf::Vector2f(IZGARA_BOYUTU, IZGARA_BOYUTU));
@@ -21,7 +20,6 @@ Board::Board(const sf::Font& font) : oyunFontu(font) {
     }
 }
 
-// Oyun kapandığında hafızada açık kalan Tile pencerelerini kapatıp temizler
 Board::~Board() {
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
@@ -32,6 +30,29 @@ Board::~Board() {
     }
 }
 
+void Board::update(float deltaTime) {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (harita[i][j] != nullptr) {
+                harita[i][j]->update(deltaTime);
+            }
+        }
+    }
+}
+
+void Board::konumlariGuncelle() {
+    for (int satir = 0; satir < 4; satir++) {
+        for (int sutun = 0; sutun < 4; sutun++) {
+            if (harita[satir][sutun] != nullptr) {
+                float hedefX = IZGARA_X + BOSLUK + sutun * (KUTU_BOYUTU + BOSLUK);
+                float hedefY = IZGARA_Y + BOSLUK + satir * (KUTU_BOYUTU + BOSLUK);
+                
+                harita[satir][sutun]->setPozisyon(hedefX, hedefY, KUTU_BOYUTU);
+                harita[satir][sutun]->setTarget(hedefX, hedefY);
+            }
+        }
+    }
+}
 
 void Board::testMatrisiYukle() {
     int geciciHarita[4][4] = {
@@ -45,40 +66,39 @@ void Board::testMatrisiYukle() {
         for (int sutun = 0; sutun < 4; sutun++) {
             int deger = geciciHarita[satir][sutun];
             if (deger != 0) {
-                // Eğer sayı sıfır değilse, hafızada yeni bir Tile nesnesi yaratıyoruz
-                harita[satir][sutun] = new Tile(deger, oyunFontu);
+                float dogusX = IZGARA_X + BOSLUK + sutun * (KUTU_BOYUTU + BOSLUK);
+                float dogusY = IZGARA_Y + BOSLUK + satir * (KUTU_BOYUTU + BOSLUK);
+                harita[satir][sutun] = new Tile(deger, oyunFontu, dogusX, dogusY, KUTU_BOYUTU);
             }
         }
     }
 }
 
-// Çizim fonksiyonu
 void Board::ciz(sf::RenderWindow& pencere) {
-    //en arkadaki büyük panel
+    // Sabit arka plan paneli
     pencere.draw(arkaPlanIzgara);
 
-    // 4x4 matrisi tarar ve kutuları yerleştirir
+    // 1. Önce 16 tane boş gri kareyi çizelim
     for (int satir = 0; satir < 4; satir++) {
         for (int sutun = 0; sutun < 4; sutun++) {
-          
             float kutuX = IZGARA_X + BOSLUK + sutun * (KUTU_BOYUTU + BOSLUK);
             float kutuY = IZGARA_Y + BOSLUK + satir * (KUTU_BOYUTU + BOSLUK);
+            bosKutuSekil.setPosition(kutuX, kutuY);
+            pencere.draw(bosKutuSekil);
+        }
+    }
 
-            // Hücre boşsa düz boş gri kutuyu çiz
-            if (harita[satir][sutun] == nullptr) {
-                bosKutuSekil.setPosition(kutuX, kutuY);
-                pencere.draw(bosKutuSekil);
-            } 
-            // Hücre doluysa o hücredeki Tile nesnesine konumunu bildir ve onu çizdir
-            else {
-                harita[satir][sutun]->setPozisyon(kutuX, kutuY, KUTU_BOYUTU);
+    // 2. Dolu sayı taşlarını matristen bağımsız, kendi piksel konumlarında akıcı çizelim
+    for (int satir = 0; satir < 4; satir++) {
+        for (int sutun = 0; sutun < 4; sutun++) {
+            if (harita[satir][sutun] != nullptr) {
                 harita[satir][sutun]->ciz(pencere); 
             }
         }
     }
 }
+
 void Board::sayiUret() {
-    //haritadaki boş yerlerin koordinatları
     std::vector<std::pair<int, int>> bosYerler;
 
     for (int i = 0; i < 4; i++) {
@@ -89,28 +109,25 @@ void Board::sayiUret() {
         }
     }
 
-    // Game Over durumu
     if (bosYerler.empty()) return;
 
-    // Boş yerler listesinden rastgele bir indeks seçelim
     int rastgeleIndeks = std::rand() % bosYerler.size();
     int satir = bosYerler[rastgeleIndeks].first;
     int sutun = bosYerler[rastgeleIndeks].second;
 
-    // %90 ihtimalle 2, %10 ihtimalle 4 
     int yeniDeger = (std::rand() % 10 == 0) ? 4 : 2;
 
-    // Seçilen boş koordinatta yeni kutuyu oluşturalım
-    harita[satir][sutun] = new Tile(yeniDeger, oyunFontu);
-}
-void Board::solaKaydir() {
-    bool hareketEttiMi = false; // Eğer hiçbir kutu oynamadıysa yeni sayı doğmasın diye kontrol
+    float dogusX = IZGARA_X + BOSLUK + sutun * (KUTU_BOYUTU + BOSLUK);
+    float dogusY = IZGARA_Y + BOSLUK + satir * (KUTU_BOYUTU + BOSLUK);
 
+    harita[satir][sutun] = new Tile(yeniDeger, oyunFontu, dogusX, dogusY, KUTU_BOYUTU);
+}
+
+void Board::solaKaydir() {
+    bool hareketEttiMi = false;
     for (int satir = 0; satir < 4; satir++) {
-        // sola sıkıştırma
         for (int sutun = 0; sutun < 4; sutun++) {
             if (harita[satir][sutun] == nullptr) {
-                // Eğer burası boşsa, sağındaki ilk dolu kutuyu bulup buraya çekiyoruz
                 for (int k = sutun + 1; k < 4; k++) {
                     if (harita[satir][k] != nullptr) {
                         harita[satir][sutun] = harita[satir][k];
@@ -121,28 +138,17 @@ void Board::solaKaydir() {
                 }
             }
         }
-
-        //birleştirme
         for (int sutun = 0; sutun < 3; sutun++) {
-            // Yan yana iki kutu da doluysa ve değerleri eşitse
             if (harita[satir][sutun] != nullptr && harita[satir][sutun + 1] != nullptr) {
                 if (harita[satir][sutun]->getDeger() == harita[satir][sutun + 1]->getDeger()) {
-                    
-                    // Soldakinin değerini iki katına çıkar 
                     int yeniDeger = harita[satir][sutun]->getDeger() * 2;
                     harita[satir][sutun]->setDeger(yeniDeger);
-
-                    // Sağdaki kutuyu hafızadan sil ve boşalt
                     delete harita[satir][sutun + 1];
                     harita[satir][sutun + 1] = nullptr;
-
                     hareketEttiMi = true;
                 }
             }
         }
-
-        
-        // Birleşen kutulardan sonra sağda oluşan yeni boşlukları kapatmak için tekrar sola yanaştırıyoruz
         for (int sutun = 0; sutun < 4; sutun++) {
             if (harita[satir][sutun] == nullptr) {
                 for (int k = sutun + 1; k < 4; k++) {
@@ -155,17 +161,15 @@ void Board::solaKaydir() {
             }
         }
     }
-
-    //yeni bir sayı
     if (hareketEttiMi) {
+        konumlariGuncelle();
         sayiUret();
     }
 }
+
 void Board::sagaKaydir() {
     bool hareketEttiMi = false;
-
     for (int satir = 0; satir < 4; satir++) {
-        
         for (int sutun = 3; sutun >= 0; sutun--) {
             if (harita[satir][sutun] == nullptr) {
                 for (int k = sutun - 1; k >= 0; k--) {
@@ -178,22 +182,17 @@ void Board::sagaKaydir() {
                 }
             }
         }
-
-        
         for (int sutun = 3; sutun > 0; sutun--) {
             if (harita[satir][sutun] != nullptr && harita[satir][sutun - 1] != nullptr) {
                 if (harita[satir][sutun]->getDeger() == harita[satir][sutun - 1]->getDeger()) {
                     int yeniDeger = harita[satir][sutun]->getDeger() * 2;
                     harita[satir][sutun]->setDeger(yeniDeger);
-
                     delete harita[satir][sutun - 1];
                     harita[satir][sutun - 1] = nullptr;
                     hareketEttiMi = true;
                 }
             }
         }
-
-        
         for (int sutun = 3; sutun >= 0; sutun--) {
             if (harita[satir][sutun] == nullptr) {
                 for (int k = sutun - 1; k >= 0; k--) {
@@ -206,15 +205,15 @@ void Board::sagaKaydir() {
             }
         }
     }
-
-    if (hareketEttiMi) sayiUret();
+    if (hareketEttiMi) {
+        konumlariGuncelle();
+        sayiUret();
+    }
 }
 
 void Board::yukariKaydir() {
     bool hareketEttiMi = false;
-
     for (int sutun = 0; sutun < 4; sutun++) {
-        
         for (int satir = 0; satir < 4; satir++) {
             if (harita[satir][sutun] == nullptr) {
                 for (int k = satir + 1; k < 4; k++) {
@@ -227,22 +226,17 @@ void Board::yukariKaydir() {
                 }
             }
         }
-
-        
         for (int satir = 0; satir < 3; satir++) {
             if (harita[satir][sutun] != nullptr && harita[satir + 1][sutun] != nullptr) {
                 if (harita[satir][sutun]->getDeger() == harita[satir + 1][sutun]->getDeger()) {
                     int yeniDeger = harita[satir][sutun]->getDeger() * 2;
                     harita[satir][sutun]->setDeger(yeniDeger);
-
                     delete harita[satir + 1][sutun];
                     harita[satir + 1][sutun] = nullptr;
                     hareketEttiMi = true;
                 }
             }
         }
-
-        
         for (int satir = 0; satir < 4; satir++) {
             if (harita[satir][sutun] == nullptr) {
                 for (int k = satir + 1; k < 4; k++) {
@@ -255,15 +249,15 @@ void Board::yukariKaydir() {
             }
         }
     }
-
-    if (hareketEttiMi) sayiUret();
+    if (hareketEttiMi) {
+        konumlariGuncelle();
+        sayiUret();
+    }
 }
 
 void Board::asagiKaydir() {
     bool hareketEttiMi = false;
-
     for (int sutun = 0; sutun < 4; sutun++) {
-        
         for (int satir = 3; satir >= 0; satir--) {
             if (harita[satir][sutun] == nullptr) {
                 for (int k = satir - 1; k >= 0; k--) {
@@ -276,26 +270,22 @@ void Board::asagiKaydir() {
                 }
             }
         }
-
-        
         for (int satir = 3; satir > 0; satir--) {
             if (harita[satir][sutun] != nullptr && harita[satir - 1][sutun] != nullptr) {
                 if (harita[satir][sutun]->getDeger() == harita[satir - 1][sutun]->getDeger()) {
                     int yeniDeger = harita[satir][sutun]->getDeger() * 2;
                     harita[satir][sutun]->setDeger(yeniDeger);
-
                     delete harita[satir - 1][sutun];
                     harita[satir - 1][sutun] = nullptr;
                     hareketEttiMi = true;
                 }
             }
         }
-
-       
         for (int satir = 3; satir >= 0; satir--) {
             if (harita[satir][sutun] == nullptr) {
                 for (int k = satir - 1; k >= 0; k--) {
                     if (harita[k][sutun] != nullptr) {
+                        
                         harita[satir][sutun] = harita[k][sutun];
                         harita[k][sutun] = nullptr;
                         break;
@@ -304,6 +294,8 @@ void Board::asagiKaydir() {
             }
         }
     }
-
-    if (hareketEttiMi) sayiUret();
+    if (hareketEttiMi) {
+        konumlariGuncelle();
+        sayiUret();
+    }
 }

@@ -1,41 +1,39 @@
 #ifndef BOARD_HPP
 #define BOARD_HPP
-#include <vector>
+
 #include <SFML/Graphics.hpp>
 #include "Tile.hpp"
 
 class Board {
 private:
-    //IZGARA OLCULERI
-    const float IZGARA_BOYUTU = 580.0f;
-    const float IZGARA_X = 110.0f;
-    const float IZGARA_Y = 110.0f;
-    const float KUTU_BOYUTU = 120.0f;
-    const float BOSLUK = 20.0f;
+    Tile* harita[4][4];
+    sf::Font oyunFontu;
 
     sf::RectangleShape arkaPlanIzgara;
     sf::RectangleShape bosKutuSekil;
 
+    // Sabit görsel ölçülerimiz
+    const float IZGARA_BOYUTU = 500.0f;
+    const float KUTU_BOYUTU = 100.0f;
+    const float BOSLUK = 20.0f;
+    const float IZGARA_X = 150.0f;
+    const float IZGARA_Y = 150.0f;
 
-    Tile* harita[4][4]; 
-    const sf::Font& oyunFontu; // font referansı
+    void konumlariGuncelle();
 
 public:
-    //Tahtayı kurar, arka plan renklerini ayarlar
     Board(const sf::Font& font);
-
-    // Hafızada oluşturulan dinamik Tile nesnelerini temizler 
     ~Board();
+
+    void ciz(sf::RenderWindow& pencere);
+    void sayiUret();
+    void update(float deltaTime);
+    void testMatrisiYukle();
+
     void solaKaydir();
     void sagaKaydir();
     void yukariKaydir();
     void asagiKaydir();
-
-    // rastgele 2 veya 4 uretecek fonksiyonu cagırıyoruz
-    void sayiUret();
-    void testMatrisiYukle();
-    // Tüm tahtayı ekrana çizen fonksiyon
-    void ciz(sf::RenderWindow& pencere);
 };
 
 #endif
