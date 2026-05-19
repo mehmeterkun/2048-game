@@ -27,6 +27,16 @@ int main() {
     while (pencere.isOpen()) {
         sf::Event olay;
         while (pencere.pollEvent(olay)) {
+            
+            if (olay.type == sf::Event::Closed)
+            pencere.close();
+
+             // A tuşuna veya sol ok a basılırsa sola hareket
+            if (olay.type == sf::Event::KeyPressed) {
+            if (olay.key.code == sf::Keyboard::Left || olay.key.code == sf::Keyboard::A) {
+            oyunTahtasi.solaKaydir();
+            }
+            }
             if (olay.type == sf::Event::Closed)
                 pencere.close();
 

@@ -103,3 +103,61 @@ void Board::sayiUret() {
     // Seçilen boş koordinatta yeni kutuyu oluşturalım
     harita[satir][sutun] = new Tile(yeniDeger, oyunFontu);
 }
+void Board::solaKaydir() {
+    bool hareketEttiMi = false; // Eğer hiçbir kutu oynamadıysa yeni sayı doğmasın diye kontrol
+
+    for (int satir = 0; satir < 4; satir++) {
+        // sola sıkıştırma
+        for (int sutun = 0; sutun < 4; sutun++) {
+            if (harita[satir][sutun] == nullptr) {
+                // Eğer burası boşsa, sağındaki ilk dolu kutuyu bulup buraya çekiyoruz
+                for (int k = sutun + 1; k < 4; k++) {
+                    if (harita[satir][k] != nullptr) {
+                        harita[satir][sutun] = harita[satir][k];
+                        harita[satir][k] = nullptr;
+                        hareketEttiMi = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        //birleştirme
+        for (int sutun = 0; sutun < 3; sutun++) {
+            // Yan yana iki kutu da doluysa ve değerleri eşitse
+            if (harita[satir][sutun] != nullptr && harita[satir][sutun + 1] != nullptr) {
+                if (harita[satir][sutun]->getDeger() == harita[satir][sutun + 1]->getDeger()) {
+                    
+                    // Soldakinin değerini iki katına çıkar 
+                    int yeniDeger = harita[satir][sutun]->getDeger() * 2;
+                    harita[satir][sutun]->setDeger(yeniDeger);
+
+                    // Sağdaki kutuyu hafızadan sil ve boşalt
+                    delete harita[satir][sutun + 1];
+                    harita[satir][sutun + 1] = nullptr;
+
+                    hareketEttiMi = true;
+                }
+            }
+        }
+
+        
+        // Birleşen kutulardan sonra sağda oluşan yeni boşlukları kapatmak için tekrar sola yanaştırıyoruz
+        for (int sutun = 0; sutun < 4; sutun++) {
+            if (harita[satir][sutun] == nullptr) {
+                for (int k = sutun + 1; k < 4; k++) {
+                    if (harita[satir][k] != nullptr) {
+                        harita[satir][sutun] = harita[satir][k];
+                        harita[satir][k] = nullptr;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    //yeni bir sayı
+    if (hareketEttiMi) {
+        sayiUret();
+    }
+}
