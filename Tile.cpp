@@ -36,8 +36,14 @@ void Tile::renkleriGuncelle() {
         case 16:   kutuRengi = sf::Color(245, 149, 99);  yaziRengi = sf::Color(249, 246, 242); break;
         case 32:   kutuRengi = sf::Color(246, 124, 95);  yaziRengi = sf::Color(249, 246, 242); break;
         case 64:   kutuRengi = sf::Color(246, 94, 59);   yaziRengi = sf::Color(249, 246, 242); break;
-        case 128:  kutuRengi = sf::Color(237, 207, 114); yaziRengi = sf::Color(249, 246, 242); break;
-        default:   kutuRengi = sf::Color(60, 58, 50);    yaziRengi = sf::Color(249, 246, 242); break;
+        case 128:  kutuRengi = sf::Color(237, 211, 130); yaziRengi = sf::Color(249, 246, 242); break; 
+        case 256:  kutuRengi = sf::Color(237, 204, 97);  yaziRengi = sf::Color(249, 246, 242); break; 
+        case 512:  kutuRengi = sf::Color(237, 200, 80);  yaziRengi = sf::Color(249, 246, 242); break; 
+        case 1024: kutuRengi = sf::Color(237, 197, 63);  yaziRengi = sf::Color(249, 246, 242); break; 
+        case 2048: kutuRengi = sf::Color(237, 194, 46);  yaziRengi = sf::Color(249, 246, 242); break; 
+        
+        // 2048'den büyük çılgın bir skor yapılırsa 
+        default:   kutuRengi = sf::Color(60, 58, 50);    yaziRengi = sf::Color(249, 246, 242); break; 
     }
 
     kutuSekil.setFillColor(kutuRengi);

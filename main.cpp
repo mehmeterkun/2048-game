@@ -18,8 +18,6 @@ int main() {
     // Oyun tahtasını oluşturuyoruz
     Board oyunTahtasi(font);
 
-    
-
     //Oyun başında rastgele iki sayı doğsun
     oyunTahtasi.sayiUret();
     oyunTahtasi.sayiUret();
@@ -29,18 +27,28 @@ int main() {
         while (pencere.pollEvent(olay)) {
             
             if (olay.type == sf::Event::Closed)
-            pencere.close();
-
-             // A tuşuna veya sol ok a basılırsa sola hareket
-            if (olay.type == sf::Event::KeyPressed) {
-            if (olay.key.code == sf::Keyboard::Left || olay.key.code == sf::Keyboard::A) {
-            oyunTahtasi.solaKaydir();
-            }
-            }
-            if (olay.type == sf::Event::Closed)
                 pencere.close();
 
-            // Tam ekran oran koruma 
+            if (olay.type == sf::Event::KeyPressed) {
+                // SOLA
+                if (olay.key.code == sf::Keyboard::Left || olay.key.code == sf::Keyboard::A) {
+                    oyunTahtasi.solaKaydir();
+                }
+                // SAĞA
+                else if (olay.key.code == sf::Keyboard::Right || olay.key.code == sf::Keyboard::D) {
+                    oyunTahtasi.sagaKaydir();
+                }
+                // YUKARI
+                else if (olay.key.code == sf::Keyboard::Up || olay.key.code == sf::Keyboard::W) {
+                    oyunTahtasi.yukariKaydir();
+                }
+                // AŞAĞI
+                else if (olay.key.code == sf::Keyboard::Down || olay.key.code == sf::Keyboard::S) {
+                    oyunTahtasi.asagiKaydir();
+                }
+            }
+
+            // Tam ekran oran koruma (Artık pollEvent döngüsünün içinde, güvende!)
             if (olay.type == sf::Event::Resized) {
                 float yeniGenislik = static_cast<float>(olay.size.width);
                 float yeniYukseklik = static_cast<float>(olay.size.height);
@@ -58,13 +66,12 @@ int main() {
                 }
                 gorunum.setViewport(sf::FloatRect(gorunumX, gorunumY, gorunumGenislik, gorunumYukseklik));
             }
-        }
+        } // pollEvent döngüsünün asıl bitmesi gereken yer burasıydı
 
         // Çizim Aşaması
         pencere.clear(sf::Color(243, 239, 227));
         pencere.setView(gorunum);
 
-        
         oyunTahtasi.ciz(pencere);
 
         pencere.display();

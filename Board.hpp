@@ -27,6 +27,9 @@ public:
     // Hafızada oluşturulan dinamik Tile nesnelerini temizler 
     ~Board();
     void solaKaydir();
+    void sagaKaydir();
+    void yukariKaydir();
+    void asagiKaydir();
 
     // rastgele 2 veya 4 uretecek fonksiyonu cagırıyoruz
     void sayiUret();

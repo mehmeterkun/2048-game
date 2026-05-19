@@ -161,3 +161,149 @@ void Board::solaKaydir() {
         sayiUret();
     }
 }
+void Board::sagaKaydir() {
+    bool hareketEttiMi = false;
+
+    for (int satir = 0; satir < 4; satir++) {
+        
+        for (int sutun = 3; sutun >= 0; sutun--) {
+            if (harita[satir][sutun] == nullptr) {
+                for (int k = sutun - 1; k >= 0; k--) {
+                    if (harita[satir][k] != nullptr) {
+                        harita[satir][sutun] = harita[satir][k];
+                        harita[satir][k] = nullptr;
+                        hareketEttiMi = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        
+        for (int sutun = 3; sutun > 0; sutun--) {
+            if (harita[satir][sutun] != nullptr && harita[satir][sutun - 1] != nullptr) {
+                if (harita[satir][sutun]->getDeger() == harita[satir][sutun - 1]->getDeger()) {
+                    int yeniDeger = harita[satir][sutun]->getDeger() * 2;
+                    harita[satir][sutun]->setDeger(yeniDeger);
+
+                    delete harita[satir][sutun - 1];
+                    harita[satir][sutun - 1] = nullptr;
+                    hareketEttiMi = true;
+                }
+            }
+        }
+
+        
+        for (int sutun = 3; sutun >= 0; sutun--) {
+            if (harita[satir][sutun] == nullptr) {
+                for (int k = sutun - 1; k >= 0; k--) {
+                    if (harita[satir][k] != nullptr) {
+                        harita[satir][sutun] = harita[satir][k];
+                        harita[satir][k] = nullptr;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    if (hareketEttiMi) sayiUret();
+}
+
+void Board::yukariKaydir() {
+    bool hareketEttiMi = false;
+
+    for (int sutun = 0; sutun < 4; sutun++) {
+        
+        for (int satir = 0; satir < 4; satir++) {
+            if (harita[satir][sutun] == nullptr) {
+                for (int k = satir + 1; k < 4; k++) {
+                    if (harita[k][sutun] != nullptr) {
+                        harita[satir][sutun] = harita[k][sutun];
+                        harita[k][sutun] = nullptr;
+                        hareketEttiMi = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        
+        for (int satir = 0; satir < 3; satir++) {
+            if (harita[satir][sutun] != nullptr && harita[satir + 1][sutun] != nullptr) {
+                if (harita[satir][sutun]->getDeger() == harita[satir + 1][sutun]->getDeger()) {
+                    int yeniDeger = harita[satir][sutun]->getDeger() * 2;
+                    harita[satir][sutun]->setDeger(yeniDeger);
+
+                    delete harita[satir + 1][sutun];
+                    harita[satir + 1][sutun] = nullptr;
+                    hareketEttiMi = true;
+                }
+            }
+        }
+
+        
+        for (int satir = 0; satir < 4; satir++) {
+            if (harita[satir][sutun] == nullptr) {
+                for (int k = satir + 1; k < 4; k++) {
+                    if (harita[k][sutun] != nullptr) {
+                        harita[satir][sutun] = harita[k][sutun];
+                        harita[k][sutun] = nullptr;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    if (hareketEttiMi) sayiUret();
+}
+
+void Board::asagiKaydir() {
+    bool hareketEttiMi = false;
+
+    for (int sutun = 0; sutun < 4; sutun++) {
+        
+        for (int satir = 3; satir >= 0; satir--) {
+            if (harita[satir][sutun] == nullptr) {
+                for (int k = satir - 1; k >= 0; k--) {
+                    if (harita[k][sutun] != nullptr) {
+                        harita[satir][sutun] = harita[k][sutun];
+                        harita[k][sutun] = nullptr;
+                        hareketEttiMi = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        
+        for (int satir = 3; satir > 0; satir--) {
+            if (harita[satir][sutun] != nullptr && harita[satir - 1][sutun] != nullptr) {
+                if (harita[satir][sutun]->getDeger() == harita[satir - 1][sutun]->getDeger()) {
+                    int yeniDeger = harita[satir][sutun]->getDeger() * 2;
+                    harita[satir][sutun]->setDeger(yeniDeger);
+
+                    delete harita[satir - 1][sutun];
+                    harita[satir - 1][sutun] = nullptr;
+                    hareketEttiMi = true;
+                }
+            }
+        }
+
+       
+        for (int satir = 3; satir >= 0; satir--) {
+            if (harita[satir][sutun] == nullptr) {
+                for (int k = satir - 1; k >= 0; k--) {
+                    if (harita[k][sutun] != nullptr) {
+                        harita[satir][sutun] = harita[k][sutun];
+                        harita[k][sutun] = nullptr;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    if (hareketEttiMi) sayiUret();
+}
