@@ -18,8 +18,11 @@ int main() {
     // Oyun tahtasını oluşturuyoruz
     Board oyunTahtasi(font);
 
-    //(2, 4, 8, 16) tahtaya yüklüyoruz
-    oyunTahtasi.testMatrisiYukle();
+    
+
+    //Oyun başında rastgele iki sayı doğsun
+    oyunTahtasi.sayiUret();
+    oyunTahtasi.sayiUret();
 
     while (pencere.isOpen()) {
         sf::Event olay;

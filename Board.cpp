@@ -1,17 +1,19 @@
 #include "Board.hpp"
-
+#include <cstdlib> // rand() ve srand() 
+#include <ctime>   // time() 
+#include <vector>
 //Izgara renklerini ayarlar ve matrisin içini tamamen boşaltır 
 Board::Board(const sf::Font& font) : oyunFontu(font) {
-    // Büyük kahverengi arka plan paneli
+    // Rastgelelik motoru
+    std::srand(std::time(nullptr));
+
     arkaPlanIzgara.setSize(sf::Vector2f(IZGARA_BOYUTU, IZGARA_BOYUTU));
     arkaPlanIzgara.setFillColor(sf::Color(187, 173, 160));
     arkaPlanIzgara.setPosition(IZGARA_X, IZGARA_Y);
 
-    // Boş hücrelerin gri renkli karesi
     bosKutuSekil.setSize(sf::Vector2f(KUTU_BOYUTU, KUTU_BOYUTU));
     bosKutuSekil.setFillColor(sf::Color(205, 193, 180));
 
-    // İlk başta tüm harita bomboş 
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
             harita[i][j] = nullptr;
@@ -74,4 +76,30 @@ void Board::ciz(sf::RenderWindow& pencere) {
             }
         }
     }
+}
+void Board::sayiUret() {
+    //haritadaki boş yerlerin koordinatları
+    std::vector<std::pair<int, int>> bosYerler;
+
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (harita[i][j] == nullptr) {
+                bosYerler.push_back({i, j});
+            }
+        }
+    }
+
+    // Game Over durumu
+    if (bosYerler.empty()) return;
+
+    // Boş yerler listesinden rastgele bir indeks seçelim
+    int rastgeleIndeks = std::rand() % bosYerler.size();
+    int satir = bosYerler[rastgeleIndeks].first;
+    int sutun = bosYerler[rastgeleIndeks].second;
+
+    // %90 ihtimalle 2, %10 ihtimalle 4 
+    int yeniDeger = (std::rand() % 10 == 0) ? 4 : 2;
+
+    // Seçilen boş koordinatta yeni kutuyu oluşturalım
+    harita[satir][sutun] = new Tile(yeniDeger, oyunFontu);
 }

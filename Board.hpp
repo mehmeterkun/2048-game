@@ -1,6 +1,6 @@
 #ifndef BOARD_HPP
 #define BOARD_HPP
-
+#include <vector>
 #include <SFML/Graphics.hpp>
 #include "Tile.hpp"
 
@@ -27,9 +27,9 @@ public:
     // Hafızada oluşturulan dinamik Tile nesnelerini temizler 
     ~Board();
 
-    // Matrisi test amaçlı dolduran fonksiyon 
+    // rastgele 2 veya 4 uretecek fonksiyonu cagırıyoruz
+    void sayiUret();
     void testMatrisiYukle();
-
     // Tüm tahtayı ekrana çizen fonksiyon
     void ciz(sf::RenderWindow& pencere);
 };
