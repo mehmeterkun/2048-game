@@ -2,9 +2,35 @@
 #include <cstdlib> 
 #include <ctime>   
 #include <vector>
+#include <fstream> // Dosya okuma ve yazma için ekledik
 
 Board::Board(const sf::Font& font) : oyunFontu(font) {
     std::srand(std::time(nullptr));
+
+    // --- SKOR BAŞLANGIÇ AYARLARI ---
+    skor = 0;
+    enYuksekSkor = 0; 
+
+    // --- REKORU DOSYADAN OKUMA ---
+    std::ifstream dosyaOku("rekor.txt");
+    if (dosyaOku.is_open()) {
+        dosyaOku >> enYuksekSkor;
+        dosyaOku.close();
+    }
+    // ------------------------------
+
+    skorYazisi.setFont(oyunFontu);
+    skorYazisi.setCharacterSize(28); // Ekran yerleşimi için ideal boyuta getirildi
+    skorYazisi.setFillColor(sf::Color(119, 110, 101));
+    // Izgaranın sol köşesine yakın hizalandı
+    skorYazisi.setPosition(IZGARA_X + 10, IZGARA_Y - 70); 
+
+    enYuksekSkorYazisi.setFont(oyunFontu);
+    enYuksekSkorYazisi.setCharacterSize(28);
+    enYuksekSkorYazisi.setFillColor(sf::Color(119, 110, 101));
+    // Izgaranın sağ köşesine şık bir şekilde yaslandı
+    enYuksekSkorYazisi.setPosition(IZGARA_X + 320, IZGARA_Y - 70);
+    // -------------------------------
 
     arkaPlanIzgara.setSize(sf::Vector2f(IZGARA_BOYUTU, IZGARA_BOYUTU));
     arkaPlanIzgara.setFillColor(sf::Color(187, 173, 160));
@@ -54,29 +80,16 @@ void Board::konumlariGuncelle() {
     }
 }
 
-void Board::testMatrisiYukle() {
-    int geciciHarita[4][4] = {
-        {2, 0, 4, 0},
-        {0, 8, 0, 0},
-        {16, 0, 0, 2},
-        {0, 0, 4, 0}
-    };
-
-    for (int satir = 0; satir < 4; satir++) {
-        for (int sutun = 0; sutun < 4; sutun++) {
-            int deger = geciciHarita[satir][sutun];
-            if (deger != 0) {
-                float dogusX = IZGARA_X + BOSLUK + sutun * (KUTU_BOYUTU + BOSLUK);
-                float dogusY = IZGARA_Y + BOSLUK + satir * (KUTU_BOYUTU + BOSLUK);
-                harita[satir][sutun] = new Tile(deger, oyunFontu, dogusX, dogusY, KUTU_BOYUTU);
-            }
-        }
-    }
-}
-
 void Board::ciz(sf::RenderWindow& pencere) {
     // Sabit arka plan paneli
     pencere.draw(arkaPlanIzgara);
+
+    // --- SKOR YAZILARINI GÜNCELLE VE ÇİZ ---
+    skorYazisi.setString("Skor: " + std::to_string(skor));
+    enYuksekSkorYazisi.setString("Rekor: " + std::to_string(enYuksekSkor)); // " En Yuksek" yerine temiz "Rekor" yapıldı
+    pencere.draw(skorYazisi);
+    pencere.draw(enYuksekSkorYazisi);
+    // ---------------------------------------
 
     // 1. Önce 16 tane boş gri kareyi çizelim
     for (int satir = 0; satir < 4; satir++) {
@@ -143,6 +156,18 @@ void Board::solaKaydir() {
                 if (harita[satir][sutun]->getDeger() == harita[satir][sutun + 1]->getDeger()) {
                     int yeniDeger = harita[satir][sutun]->getDeger() * 2;
                     harita[satir][sutun]->setDeger(yeniDeger);
+                    
+                    // SKOR VE ANLIK DOSYA REKOR GÜNCELLEME
+                    skor += yeniDeger;
+                    if (skor > enYuksekSkor) {
+                        enYuksekSkor = skor;
+                        std::ofstream dosyaYaz("rekor.txt");
+                        if (dosyaYaz.is_open()) {
+                            dosyaYaz << enYuksekSkor;
+                            dosyaYaz.close();
+                        }
+                    }
+
                     delete harita[satir][sutun + 1];
                     harita[satir][sutun + 1] = nullptr;
                     hareketEttiMi = true;
@@ -187,6 +212,18 @@ void Board::sagaKaydir() {
                 if (harita[satir][sutun]->getDeger() == harita[satir][sutun - 1]->getDeger()) {
                     int yeniDeger = harita[satir][sutun]->getDeger() * 2;
                     harita[satir][sutun]->setDeger(yeniDeger);
+                    
+                    // SKOR VE ANLIK DOSYA REKOR GÜNCELLEME
+                    skor += yeniDeger;
+                    if (skor > enYuksekSkor) {
+                        enYuksekSkor = skor;
+                        std::ofstream dosyaYaz("rekor.txt");
+                        if (dosyaYaz.is_open()) {
+                            dosyaYaz << enYuksekSkor;
+                            dosyaYaz.close();
+                        }
+                    }
+
                     delete harita[satir][sutun - 1];
                     harita[satir][sutun - 1] = nullptr;
                     hareketEttiMi = true;
@@ -231,6 +268,18 @@ void Board::yukariKaydir() {
                 if (harita[satir][sutun]->getDeger() == harita[satir + 1][sutun]->getDeger()) {
                     int yeniDeger = harita[satir][sutun]->getDeger() * 2;
                     harita[satir][sutun]->setDeger(yeniDeger);
+                    
+                    // SKOR VE ANLIK DOSYA REKOR GÜNCELLEME
+                    skor += yeniDeger;
+                    if (skor > enYuksekSkor) {
+                        enYuksekSkor = skor;
+                        std::ofstream dosyaYaz("rekor.txt");
+                        if (dosyaYaz.is_open()) {
+                            dosyaYaz << enYuksekSkor;
+                            dosyaYaz.close();
+                        }
+                    }
+
                     delete harita[satir + 1][sutun];
                     harita[satir + 1][sutun] = nullptr;
                     hareketEttiMi = true;
@@ -275,6 +324,18 @@ void Board::asagiKaydir() {
                 if (harita[satir][sutun]->getDeger() == harita[satir - 1][sutun]->getDeger()) {
                     int yeniDeger = harita[satir][sutun]->getDeger() * 2;
                     harita[satir][sutun]->setDeger(yeniDeger);
+                    
+                    // SKOR VE ANLIK DOSYA REKOR GÜNCELLEME
+                    skor += yeniDeger;
+                    if (skor > enYuksekSkor) {
+                        enYuksekSkor = skor;
+                        std::ofstream dosyaYaz("rekor.txt");
+                        if (dosyaYaz.is_open()) {
+                            dosyaYaz << enYuksekSkor;
+                            dosyaYaz.close();
+                        }
+                    }
+
                     delete harita[satir - 1][sutun];
                     harita[satir - 1][sutun] = nullptr;
                     hareketEttiMi = true;
@@ -285,7 +346,6 @@ void Board::asagiKaydir() {
             if (harita[satir][sutun] == nullptr) {
                 for (int k = satir - 1; k >= 0; k--) {
                     if (harita[k][sutun] != nullptr) {
-                        
                         harita[satir][sutun] = harita[k][sutun];
                         harita[k][sutun] = nullptr;
                         break;

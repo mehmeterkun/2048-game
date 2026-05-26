@@ -21,6 +21,13 @@ private:
 
     void konumlariGuncelle();
 
+    // --- SKOR MEKANİĞİ DEĞİŞKENLERİ ---
+    int skor;
+    int enYuksekSkor;
+    sf::Text skorYazisi;
+    sf::Text enYuksekSkorYazisi;
+    // ----------------------------------
+
 public:
     Board(const sf::Font& font);
     ~Board();
@@ -28,12 +35,15 @@ public:
     void ciz(sf::RenderWindow& pencere);
     void sayiUret();
     void update(float deltaTime);
-    void testMatrisiYukle();
 
     void solaKaydir();
     void sagaKaydir();
     void yukariKaydir();
     void asagiKaydir();
+
+    // Skoru dışarıdan okumak istersen (ileride menüde veya oyun bitti ekranında lazım olacak):
+    int getSkor() const { return skor; }
+    int getEnYuksekSkor() const { return enYuksekSkor; }
 };
 
 #endif
