@@ -16,8 +16,8 @@ private:
     const float IZGARA_BOYUTU = 500.0f;
     const float KUTU_BOYUTU = 100.0f;
     const float BOSLUK = 20.0f;
-    const float IZGARA_X = 150.0f;
-    const float IZGARA_Y = 150.0f;
+    const float IZGARA_X = 350.0f;
+    const float IZGARA_Y = 130.0f;
 
     void konumlariGuncelle();
 
@@ -31,7 +31,9 @@ private:
 public:
     Board(const sf::Font& font);
     ~Board();
-
+    bool oyunBittiMi();
+    int getSkor() const { return skor; }
+    int getEnYuksekSkor() const { return enYuksekSkor; }
     void ciz(sf::RenderWindow& pencere);
     void sayiUret();
     void update(float deltaTime);
@@ -41,9 +43,7 @@ public:
     void yukariKaydir();
     void asagiKaydir();
 
-    // Skoru dışarıdan okumak istersen (ileride menüde veya oyun bitti ekranında lazım olacak):
-    int getSkor() const { return skor; }
-    int getEnYuksekSkor() const { return enYuksekSkor; }
+   
 };
 
 #endif
