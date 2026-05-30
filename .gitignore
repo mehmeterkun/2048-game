@@ -1,0 +1,9 @@
+# Derleme dosyaları
+*.o
+*.exe
+
+# Rekor dosyası (oyun kendi oluşturmalı, git'e yüklenmemeli)
+rekor.txt
+
+# VS Code ayarları (opsiyonel)
+.vscode/
